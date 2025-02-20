@@ -122,7 +122,7 @@ const Card = ({
             <div className="flex justify-between items-center">
               {/* User info */}
               <div className="flex items-center gap-1 sm:gap-2">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-full object-cover bg-green-700 flex justify-center items-center text-white text-[10px] sm:text-xs font-bold">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-full object-cover bg-indigo-500 flex justify-center items-center dark:text-black text-white text-[10px] sm:text-xs font-bold">
                   {name[0].toUpperCase()}
                 </div>
                 <p className="text-white text-xs sm:text-sm">{name}</p>
@@ -156,7 +156,7 @@ const Card = ({
           >
             {/* Close button */}
             <button
-              className="absolute top-2 right-2 sm:top-4 sm:right-4 text-white hover:text-gray-300 z-10 p-2"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 lg:text-black dark:lg:text-white text-white z-10 p-2"
               onClick={closeModal}
             >
               <span className="text-xl sm:text-2xl">
@@ -167,29 +167,31 @@ const Card = ({
             {/* Modal content */}
             <div className="flex flex-col lg:flex-row h-full">
               {/* Image container */}
-              <div className="lg:w-2/3 h-[300px] sm:h-[400px] lg:h-[600px]">
+              <div className="lg:w-2/3 h-[380px] md:h-[400px] lg:h-[600px]">
                 <img
                   src={photo}
                   alt={prompt}
-                  className="w-full h-full object-contain bg-[#1a1f2d]/50"
+                  className="w-full h-full object-cover"
                 />
               </div>
 
               {/* Details container */}
-              <div className="lg:w-1/3 p-4 sm:p-6 bg-[#1a1f2d] flex flex-col max-h-[300px] lg:max-h-[600px]">
+              <div className="lg:w-1/3 p-4 sm:p-6 bg-gray-50 dark:bg-gray-800 flex flex-col max-h-[300px] lg:max-h-[600px]">
                 <div className="flex-grow overflow-y-auto">
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-green-700 flex justify-center items-center text-white text-xs sm:text-sm font-bold">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-indigo-500 flex justify-center items-center dark:text-black text-white text-xs sm:text-sm font-bold">
                       {name[0].toUpperCase()}
                     </div>
-                    <p className="text-white text-base sm:text-lg">{name}</p>
+                    <p className="dark:text-white text-black text-base sm:text-lg">
+                      {name}
+                    </p>
                   </div>
 
                   <div className="mb-4 sm:mb-6">
-                    <h3 className="text-white text-xs sm:text-sm mb-1 sm:mb-2">
+                    <h3 className="dark:text-white text-black text-xs sm:text-sm mb-1 sm:mb-2">
                       Prompt:
                     </h3>
-                    <p className="text-gray-300 text-sm sm:text-base max-h-[150px] sm:max-h-[200px] pr-2">
+                    <p className="dark:text-gray-300 text-sm  text-gray-700 sm:text-base max-h-[150px] sm:max-h-[200px] pr-2">
                       {prompt}
                     </p>
                   </div>

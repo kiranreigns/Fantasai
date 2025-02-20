@@ -70,7 +70,7 @@ const Header = () => {
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
-          className="p-2 sm:p-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+          className="p-2 sm:p-2.5 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
           aria-label="Toggle theme"
         >
           {isDarkMode ? (
@@ -117,7 +117,7 @@ const Header = () => {
         {!isLoggedIn && (
           <button
             onClick={() => setShowAuthModal(true)}
-            className="bg-gray-100 text-gray-700 font-semibold px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-gray-200 transition-all"
+            className="bg-gray-100 text-gray-700 font-semibold px-3 py-1.5 text-sm sm:text-base rounded-lg dark:border-white border-2 border-solid border-indigo-500 hover:bg-gray-200 transition-all"
           >
             Sign up
           </button>

@@ -30,6 +30,10 @@ const ActionButtons = ({
     large: "w-4 h-4 sm:w-5 sm:h-5",
   };
 
+  // Add dark mode specific classes for icons
+  const iconColorClasses =
+    size === "large" ? "text-gray-800 dark:text-white" : "text-white";
+
   return (
     <div className="flex items-center gap-2 sm:gap-3">
       <button
@@ -55,22 +59,24 @@ const ActionButtons = ({
         ) : isLiked ? (
           <FaHeart className={`${iconSizes[size]} text-red-500`} />
         ) : (
-          <FaRegHeart className={`${iconSizes[size]} text-white`} />
+          <FaRegHeart className={`${iconSizes[size]} ${iconColorClasses}`} />
         )}
       </button>
 
       <div className="relative">
         <button
           onClick={toggleShare}
-          className="flex items-center text-white hover:scale-110 transition-transform bg-transparent border-none outline-none p-0"
+          className="flex items-center hover:scale-110 transition-transform bg-transparent border-none outline-none p-0"
         >
-          <FaRegShareSquare className={iconSizes[size]} />
+          <FaRegShareSquare
+            className={`${iconSizes[size]} ${iconColorClasses}`}
+          />
         </button>
 
         {isShareOpen && (
           <div
             className={`absolute bottom-full right-0 mb-1 sm:mb-0.5 rounded-lg p-1 sm:p-2 ${
-              size === "large" ? "bg-[#10131f]" : ""
+              size === "large" ? "bg-gray-800" : ""
             }`}
           >
             <div className="flex gap-1 sm:gap-2">
@@ -105,7 +111,9 @@ const ActionButtons = ({
         <img
           src={download}
           alt="download"
-          className={`${iconSizes[size]} object-contain invert`}
+          className={`${iconSizes[size]} object-contain ${
+            size === "large" ? "dark:invert" : "invert"
+          }`}
         />
       </button>
     </div>
