@@ -26,10 +26,24 @@ const Card = ({
     setIsShareOpen(!isShareOpen);
   };
 
-  const handleSharePlatform = (e, platform) => {
+  const handleSharePlatform = async (e, platform) => {
     e.stopPropagation();
     const shareUrl = window.location.href;
     const text = `Check out this AI-generated image: ${prompt}`;
+
+    // Try Web Share API first on supported devices
+    if (navigator.share && platform === "native") {
+      try {
+        await navigator.share({
+          title: "Share AI Generated Image",
+          text: text,
+          url: shareUrl,
+        });
+        return;
+      } catch (err) {
+        console.log("Error sharing:", err);
+      }
+    }
 
     let shareLink = "";
     switch (platform) {
@@ -41,19 +55,31 @@ const Card = ({
         )}`;
         break;
       case "instagram":
-        alert("Instagram sharing requires app integration");
+        alert(
+          "Instagram sharing requires app integration, please download the image and share it manually"
+        );
         break;
-      case "linkedin":
-        shareLink = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-          shareUrl
-        )}`;
+      case "twitter":
+        shareLink = `https://x.com/intent/tweet?text=${encodeURIComponent(
+          text
+        )}&url=${encodeURIComponent(shareUrl)}`;
         break;
       default:
-        break;
+        return;
     }
 
     if (shareLink) {
-      window.open(shareLink, "_blank", "width=600,height=400");
+      // Centered popup window with platform-specific dimensions
+      const width = 550;
+      const height = 420;
+      const left = Math.floor((window.innerWidth - width) / 2);
+      const top = Math.floor((window.innerHeight - height) / 2);
+
+      window.open(
+        shareLink,
+        "_blank",
+        `width=${width},height=${height},left=${left},top=${top}`
+      );
     }
   };
 

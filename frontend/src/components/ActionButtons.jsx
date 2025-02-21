@@ -1,14 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { download } from "../assets";
-import {
-  FaRegShareSquare,
-  FaRegHeart,
-  FaHeart,
-  FaPinterest,
-  FaInstagram,
-  FaLinkedin,
-} from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaPinterest, FaInstagram } from "react-icons/fa";
+import { FaXTwitter, FaRegShareFromSquare } from "react-icons/fa6";
 
 const ActionButtons = ({
   isLiked,
@@ -68,7 +62,7 @@ const ActionButtons = ({
           onClick={toggleShare}
           className="flex items-center hover:scale-110 transition-transform bg-transparent border-none outline-none p-0"
         >
-          <FaRegShareSquare
+          <FaRegShareFromSquare
             className={`${iconSizes[size]} ${iconColorClasses}`}
           />
         </button>
@@ -93,10 +87,10 @@ const ActionButtons = ({
                 <FaInstagram className={shareIconSizes[size]} />
               </button>
               <button
-                onClick={(e) => handleSharePlatform(e, "linkedin")}
-                className="text-blue-600 hover:scale-110 transition-transform bg-transparent border-none outline-none p-0"
+                onClick={(e) => handleSharePlatform(e, "twitter")}
+                className="text-white hover:scale-110 transition-transform bg-transparent border-none outline-none p-0"
               >
-                <FaLinkedin className={shareIconSizes[size]} />
+                <FaXTwitter className={shareIconSizes[size]} />
               </button>
             </div>
           </div>
