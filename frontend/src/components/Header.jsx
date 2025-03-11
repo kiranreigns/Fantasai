@@ -1,37 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { logoLight, logoDark } from "../assets";
+import { useAuth } from "../context/AuthContext";
 import AuthModal from "./AuthModal";
 
 const Header = () => {
+  const { currentUser, signout } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate(); // useNavigate hook for navigation between pages
   const location = useLocation(); // useLocation to track the current path
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const profile = localStorage.getItem("userProfile");
-    if (token && profile) {
-      setIsLoggedIn(true);
-      setUserProfile(JSON.parse(profile));
-    }
-  }, []);
-
   const handleCreateOrPostsclick = () => {
-    if (!isLoggedIn) {
+    if (!currentUser) {
       setShowAuthModal(true);
       return;
     }
 
     if (location.pathname === "/create-post") {
-      navigate("/"); // navigate to home page (posts page)
+      navigate("/");
     } else {
-      navigate("/create-post"); // navigate to create post page
+      navigate("/create-post");
     }
   };
 
@@ -40,20 +31,14 @@ const Header = () => {
     return location.pathname === "/create-post" ? "Posts" : "Create";
   };
 
-  const handleAuthSuccess = (userInfo) => {
+  const handleAuthSuccess = () => {
     setShowAuthModal(false);
-    setIsLoggedIn(true);
-    setUserProfile(userInfo);
-    localStorage.setItem("userProfile", JSON.stringify(userInfo));
-    navigate("/create-post");
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userProfile");
-    setIsLoggedIn(false);
-    setUserProfile(null);
+    signout();
     setShowProfileMenu(false);
+    navigate("/");
   };
 
   return (
@@ -114,30 +99,46 @@ const Header = () => {
           {getButtonText()}
         </button>
 
-        {!isLoggedIn && (
+        {!currentUser && (
           <button
             onClick={() => setShowAuthModal(true)}
             className="bg-gray-100 text-gray-700 font-semibold px-3 py-1.5 text-sm sm:text-base rounded-lg dark:border-white border-2 border-solid border-indigo-500 hover:bg-gray-200 transition-all"
           >
-            Sign up
+            Sign in
           </button>
         )}
 
-        {isLoggedIn && userProfile && (
+        {currentUser && (
           <div className="relative">
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="flex items-center rounded-full overflow-hidden w-10 h-10  focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <img
-                src={userProfile.picture}
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
+              {currentUser.photoURL ? (
+                <img
+                  src={currentUser.photoURL}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium">
+                  {currentUser.displayName
+                    ? currentUser.displayName.charAt(0).toUpperCase()
+                    : "?"}
+                </div>
+              )}
             </button>
 
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
+                <div className="px-4 py-2 border-b border-gray-200">
+                  <p className="text-sm font-medium text-gray-900">
+                    {currentUser.displayName}
+                  </p>
+                  <p className="text-sm text-gray-500 truncate">
+                    {currentUser.email}
+                  </p>
+                </div>
                 <button
                   onClick={handleLogout}
                   className="w-full text-left px-4 py-2 text-sm 
@@ -164,7 +165,7 @@ const Header = () => {
                       d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                     />
                   </svg>
-                  Logout
+                  Sign out
                 </button>
               </div>
             )}

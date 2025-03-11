@@ -1,51 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { googleProvider } from "../../config/firebase";
 
 const AuthModal = ({ isOpen, onClose, onSuccess }) => {
-  useEffect(() => {
-    // Initialize Google API client
-    const loadGoogleAuth = async () => {
-      try {
-        await new Promise((resolve, reject) => {
-          const script = document.createElement("script");
-          script.src = "https://accounts.google.com/gsi/client";
-          script.onload = resolve;
-          script.onerror = reject;
-          document.body.appendChild(script);
-        });
-
-        const client = google.accounts.oauth2.initTokenClient({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-          scope: "email profile",
-          redirect_uri: window.location.origin, // Dynamically set the current origin
-          callback: async (response) => {
-            if (response.access_token) {
-              const userInfo = await fetch(
-                "https://www.googleapis.com/oauth2/v3/userinfo",
-                {
-                  headers: {
-                    Authorization: `Bearer ${response.access_token}`,
-                  },
-                }
-              ).then((res) => res.json());
-
-              if (userInfo.email) {
-                localStorage.setItem("token", response.access_token);
-                onSuccess(userInfo);
-              }
-            }
-          },
-        });
-
-        // Store the client instance for later use
-        window.googleAuthClient = client;
-        console.log("Google Auth initialized successfully");
-      } catch (error) {
-        console.error("Error initializing Google Auth:", error);
-      }
-    };
-
-    loadGoogleAuth();
-  }, []);
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -53,6 +10,23 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
     name: "",
   });
 
+  // google sign-in
+  const { signin } = useAuth();
+
+  // Early return if modal isn't open
+  if (!isOpen) return null;
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signin(googleProvider);
+      onClose(); // Close modal after successful sign-in
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+    }
+  };
+
+  // Regular Email/Password Authentication
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -60,44 +34,25 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
         `http://localhost:8080/api/v1/auth/${isSignUp ? "signup" : "login"}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         }
       );
 
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        onSuccess();
-      } else {
+      if (!response.ok) {
         const error = await response.json();
-        alert(error.message || "Authentication failed");
+        throw new Error(error.message || "Authentication failed");
       }
+
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      onSuccess();
     } catch (error) {
       console.error("Auth error:", error);
-      alert("Authentication failed");
+      alert(error.message);
     }
   };
-
-  const handleGoogleSignIn = () => {
-    if (!window.googleAuthClient) {
-      console.error("Google Auth client not initialized");
-      return;
-    }
-
-    try {
-      // Token handling is done in the callback defined in useEffect
-      window.googleAuthClient.requestAccessToken();
-    } catch (error) {
-      console.error("Google Sign-In error:", error);
-      alert("Google Sign-In failed: " + (error.message || "Unknown error"));
-    }
-  };
-
-  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
