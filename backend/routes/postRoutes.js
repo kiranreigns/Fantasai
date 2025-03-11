@@ -1,17 +1,11 @@
 import express from "express";
 import * as dotenv from "dotenv";
-import { v2 as cloudinary } from "cloudinary";
 import Post from "../mongodb/models/post.js";
+import cloudinary from "../config/cloudinary.js";
 
 dotenv.config();
 
 const router = express.Router();
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 // GET ALL POSTS
 router.route("/").get(async (req, res) => {
@@ -36,21 +30,13 @@ router.route("/").post(async (req, res) => {
       });
     }
 
-    // Validate photo data
-    if (!photo.startsWith("data:image/")) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid photo format. Must be a valid base64 image",
-      });
-    }
-
     // Upload to Cloudinary with error handling and options
     let photoUrl;
     try {
       photoUrl = await cloudinary.uploader.upload(photo, {
         folder: "fantasai",
         resource_type: "auto",
-        timeout: 60000, // 60 seconds timeout
+        timeout: 10000, // 10 seconds timeout
         quality: "auto:good", // Optimize quality
         fetch_format: "auto", // Auto-select best format
       });
@@ -64,7 +50,6 @@ router.route("/").post(async (req, res) => {
       });
     }
 
-    // Create post with error handling
     try {
       const newPost = await Post.create({
         name: name.trim(),
