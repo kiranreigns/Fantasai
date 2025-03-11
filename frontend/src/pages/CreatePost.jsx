@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { preview } from "../assets";
-import { getRandomPrompts } from "../utils";
+import { getRandomPrompt } from "../utils";
 import { FormField, LoadingSpinner, Button } from "../components";
 
 const API_ENDPOINTS = {
@@ -23,11 +23,6 @@ const CreatePost = () => {
   const [errors, setErrors] = useState({});
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) navigate("/");
-  }, [navigate]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -51,11 +46,10 @@ const CreatePost = () => {
       if (!response.ok) throw new Error("Failed to generate image");
 
       const data = await response.json();
-      //setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` }); // Set the generated image (might use stale state)
       setForm((prev) => ({
         ...prev,
         photo: `data:image/jpeg;base64,${data.photo}`,
-      })); //use functional state update to avoid stale state
+      }));
     } catch (error) {
       alert(error.message);
     } finally {
@@ -98,7 +92,7 @@ const CreatePost = () => {
   };
 
   const handleSurpriseMe = () => {
-    const randomPrompt = getRandomPrompts(form.prompt);
+    const randomPrompt = getRandomPrompt(form.prompt);
     setForm((prev) => ({ ...prev, prompt: randomPrompt }));
   };
 

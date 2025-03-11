@@ -3,18 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "nodemon index"
-    
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "keywords": [],
   "author": "Kiran",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.7.9",
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.2",
     "cloudinary": "^2.5.1",
+    "cookie": "^1.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -26,9 +27,7 @@
   "devDependencies": {
     "nodemon": "^3.1.9"
   },
-
   "overrides": {
-  "whatwg-url": "14.1.0"
+    "whatwg-url": "14.1.0"
   }
-
 }

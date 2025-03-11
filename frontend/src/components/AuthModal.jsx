@@ -30,12 +30,20 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = isSignUp
+        ? {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+          } // For signup
+        : { email: formData.email, password: formData.password }; // For login
+
       const response = await fetch(
         `http://localhost:8080/api/v1/auth/${isSignUp ? "signup" : "login"}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -47,7 +55,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
       const data = await response.json();
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      onSuccess();
+      if (onSuccess) onSuccess(); // Call the success callback
     } catch (error) {
       console.error("Auth error:", error);
       alert(error.message);

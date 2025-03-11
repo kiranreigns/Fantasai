@@ -22,11 +22,6 @@ app.get("/", (req, res) => {
   res.send("Hello from Fantasai!");
 });
 
-// Protected route example
-app.get("/api/v1/create-post", authRoutes, (req, res) => {
-  res.status(200).json({ message: "Access granted to create post" });
-});
-
 const startServer = async () => {
   try {
     connectDB(process.env.MONGODB_URL);
