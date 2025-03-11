@@ -13,9 +13,10 @@ const MODELS = [
     params: {
       num_inference_steps: 30, // Reduced steps for faster generation
       guidance_scale: 7.5,
-      negative_prompt: "blurry, bad quality, distorted, ugly, deformed",
+      negative_prompt:
+        "blurry, bad quality, distorted, ugly, deformed, out of shape",
     },
-    timeout: 40000,
+    timeout: 20000,
   },
   {
     id: "runwayml/stable-diffusion-v1-5",
@@ -23,19 +24,10 @@ const MODELS = [
     params: {
       num_inference_steps: 35,
       guidance_scale: 8.0,
-      negative_prompt: "blurry, bad quality, distorted, ugly, deformed",
+      negative_prompt:
+        "blurry, bad quality, distorted, ugly, deformed, out of shape",
     },
-    timeout: 35000,
-  },
-  {
-    id: "CompVis/stable-diffusion-v1-4",
-    priority: 3,
-    params: {
-      num_inference_steps: 25,
-      guidance_scale: 7.5,
-      negative_prompt: "blurry, bad quality, distorted, ugly, deformed",
-    },
-    timeout: 30000,
+    timeout: 15000,
   },
 ];
 
@@ -99,7 +91,7 @@ async function generateImage(prompt, model) {
 
 // Improved image generation function with better error handling
 async function generateImageWithFallback(prompt) {
-  console.log("Starting image generation for prompt:", prompt);
+  console.log("Starting image generation for the given prompt");
 
   // Check cache first
   const cacheKey = `${prompt}`;
@@ -178,10 +170,10 @@ router.route("/").post(async (req, res) => {
     }
 
     // Input validation
-    if (typeof prompt !== "string" || prompt.length > 500) {
+    if (typeof prompt !== "string" || prompt.length < 0) {
       return res.status(400).json({
         success: false,
-        error: "Invalid prompt. Must be a string under 500 characters.",
+        error: "Invalid prompt. Must be a string or a sentence.",
       });
     }
 
@@ -227,58 +219,10 @@ router.route("/").post(async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      error: "Image generation failed: " + (error.message || "Unknown error"),
+      error: "Image generation failed: " + error.message,
       details: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
   }
 });
 
 export default router;
-
-/*
-    const response = await fetch(
-      "https://api.stability.ai/v1/generation/stable-diffusion-v1-6/text-to-image",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.STABILITY_API_KEY}`,
-        },
-        body: JSON.stringify({
-          text_prompts: [
-            {
-              text: prompt,
-              weight: 1,
-            },
-          ],
-          cfg_scale: 7,
-          height: 1024,
-          width: 1024,
-          samples: 1,
-          steps: 30,
-        }),
-      }
-    );
-    
-
-    if (!response.ok) {
-      throw new Error(`Non-200 response: ${await response.text()}`);
-    }
-
-    const responseData = await response.json();
-    const base64Image = responseData.artifacts[0].base64;
-
-    return res.status(200).json({
-      success: true,
-      photo: base64Image,
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Something went wrong",
-    });
-  }
-});
-
-*/

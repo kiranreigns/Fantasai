@@ -1,18 +1,35 @@
 // middleware/auth.js
 import jwt from "jsonwebtoken";
+import { config } from "dotenv";
+import User from "../mongodb/models/user.js";
 
-export const auth = async (req, res, next) => {
+config();
+
+const authorize = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    let token;
 
-    if (!token) {
-      return res.status(401).json({ message: "Authentication required" });
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
     }
 
-    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decodedData.id;
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(decoded.userId);
+
+    if (!user) return res.status(401).json({ message: "Unauthorized" });
+
+    req.user = user;
+
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
+    res.status(401).json({ message: "Unauthorized", error: error.message });
   }
 };
+
+export default authorize;

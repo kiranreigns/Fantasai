@@ -2,17 +2,12 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { OAuth2Client } from "google-auth-library";
 import User from "../mongodb/models/user.js";
-import { auth } from "../middleware/auth.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
-if (!process.env.GOOGLE_CLIENT_ID) {
-  console.error("GOOGLE_CLIENT_ID environment variable is not set");
-}
-
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
 // Sign Up
 router.post("/signup", async (req, res) => {
   try {
@@ -49,84 +44,45 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("Attempting login with email:", email);
 
     const user = await User.findOne({ email });
     if (!user) {
+      console.log("User not found for email:", email);
       return res.status(404).json({ message: "User not found" });
     }
 
-    const isPasswordCorrect = bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+    bcrypt.compare(password, user.password, (err, isMatch) => {
+      if (err) {
+        console.error("Password comparison error:", err);
+        return res.status(500).json({ message: "Error comparing passwords" });
+      }
 
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+      console.log("Password match result:", isMatch);
 
-    res.status(200).json({
-      user: { id: user._id, name: user.name, email: user.email },
-      token,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
-  }
-});
+      if (!isMatch) {
+        return res.status(400).json({ message: "Invalid credentials" });
+      }
 
-// Google Authentication
-router.post("/google", async (req, res) => {
-  if (!process.env.GOOGLE_CLIENT_ID) {
-    return res
-      .status(500)
-      .json({ message: "Google authentication not configured" });
-  }
-  try {
-    const { token } = req.body;
-    const ticket = await googleClient.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: user._id, email: user.email },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+      );
 
-    const { name, email, sub: googleId } = ticket.getPayload();
-
-    let user = await User.findOne({ email });
-    if (!user) {
-      user = await User.create({
-        name,
-        email,
-        googleId,
+      // Send response with user data and token
+      return res.status(200).json({
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+        },
+        token,
       });
-    }
-
-    const jwtToken = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    res.status(200).json({
-      user: { id: user._id, name: user.name, email: user.email },
-      token: jwtToken,
     });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
-  }
-});
-
-// Check Auth Status
-router.get("/status", auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.status(200).json({
-      user: { id: user._id, name: user.name, email: user.email },
-    });
-  } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ message: "Something went wrong" });
   }
 });
