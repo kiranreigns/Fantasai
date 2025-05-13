@@ -1,9 +1,14 @@
-import React from "react";
 import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Card, FormField, HomeLoader } from "../components";
 import FantasaiIntro from "../components/FantasaiIntro";
 
 const RenderCards = ({ data, title }) => {
+  RenderCards.propTypes = {
+    data: PropTypes.array,
+    title: PropTypes.string.isRequired,
+  };
+
   if (data?.length > 0) {
     return data.map((post) => <Card key={post._id} {...post} />);
   }
@@ -20,6 +25,24 @@ const Home = () => {
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [noResults, setNoResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Check scroll position to show/hide button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -206,6 +229,28 @@ const Home = () => {
           )}
         </div>
       </section>
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 p-3 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 transition-all duration-300 z-50"
+          aria-label="Scroll to top"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 15l7-7 7 7"
+            />
+          </svg>
+        </button>
+      )}
     </>
   );
 };

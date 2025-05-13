@@ -17,3 +17,8 @@
   font-size: clamp(0.75rem, 0.5rem + 1vw, 1.125rem);
   padding: clamp(0.5rem, 0.25rem + 2vw, 1.5rem);
 }
+
+/* hide card overlay while scrolling */
+body.scrolling .group-hover\:flex {
+  display: none !important;
+}

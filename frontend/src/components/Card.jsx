@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { downloadImage } from "../utils";
 import ActionButtons from "./ActionButtons";
@@ -11,7 +11,6 @@ const Card = ({
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isShareOpen, setIsShareOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLike = (e) => {
@@ -19,11 +18,6 @@ const Card = ({
     setIsLiked(!isLiked);
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 300);
-  };
-
-  const toggleShare = (e) => {
-    e.stopPropagation();
-    setIsShareOpen(!isShareOpen);
   };
 
   const handleSharePlatform = async (e, platform) => {
@@ -54,10 +48,10 @@ const Card = ({
           text
         )}`;
         break;
-      case "instagram":
-        alert(
-          "Instagram sharing requires app integration, please download the image and share it manually"
-        );
+      case "facebook":
+        shareLink = `https://www.facebook.com/share.php?u=${encodeURIComponent(
+          shareUrl
+        )}`;
         break;
       case "twitter":
         shareLink = `https://x.com/intent/tweet?text=${encodeURIComponent(
@@ -95,6 +89,23 @@ const Card = ({
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
+  // hide card overlay while scrolling
+  useEffect(() => {
+    let timeoutId;
+
+    const handleScroll = () => {
+      document.body.classList.add("scrolling");
+
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        document.body.classList.remove("scrolling");
+      }, 150); // hide overlay for 150ms after scroll stops
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
@@ -158,9 +169,7 @@ const Card = ({
               <ActionButtons
                 isLiked={isLiked}
                 isAnimating={isAnimating}
-                isShareOpen={isShareOpen}
                 handleLike={handleLike}
-                toggleShare={toggleShare}
                 handleSharePlatform={handleSharePlatform}
                 handleDownload={handleDownload}
                 size="small"
@@ -227,9 +236,7 @@ const Card = ({
                 <ActionButtons
                   isLiked={isLiked}
                   isAnimating={isAnimating}
-                  isShareOpen={isShareOpen}
                   handleLike={handleLike}
-                  toggleShare={toggleShare}
                   handleSharePlatform={handleSharePlatform}
                   handleDownload={handleDownload}
                   size="large"
