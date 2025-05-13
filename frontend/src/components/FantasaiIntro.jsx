@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthModal from "./AuthModal";
@@ -11,7 +11,7 @@ const FantasaiIntro = () => {
 
   useEffect(() => {
     const shimmerElement = shimmerRef.current;
-    let animationFrame;
+    let animation;
 
     const animateShimmer = () => {
       const keyframes = [{ left: "-100%" }, { left: "100%" }];
@@ -23,15 +23,15 @@ const FantasaiIntro = () => {
       };
 
       if (shimmerElement) {
-        shimmerElement.animate(keyframes, options);
+        animation = shimmerElement.animate(keyframes, options);
       }
     };
 
     animateShimmer();
 
     return () => {
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
+      if (animation) {
+        animation.cancel();
       }
     };
   }, []);
