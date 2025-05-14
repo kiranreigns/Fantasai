@@ -1,7 +1,9 @@
 // CreatePost.jsx
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 import { preview } from "../assets";
 import { getRandomPrompt } from "../utils";
 import { FormField, LoadingSpinner, Button } from "../components";
@@ -37,21 +39,43 @@ const CreatePost = () => {
 
     try {
       setGeneratingImg(true);
-      const response = await fetch(API_ENDPOINTS.generateImage, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: form.prompt }),
-      });
+      // Validate the URL before making the request
+      if (!API_ENDPOINTS.generateImage) {
+        throw new Error("API endpoint for image generation is not configured");
+      }
 
-      if (!response.ok) throw new Error("Failed to generate image");
+      console.log("Sending request to:", API_ENDPOINTS.generateImage);
 
-      const data = await response.json();
+      const response = await axios.post(
+        API_ENDPOINTS.generateImage,
+        { prompt: form.prompt },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      // With axios, we don't need to check response.ok
+      // The data is directly available in response.data
+      const data = response.data;
+
+      if (!data.success || !data.photo) {
+        throw new Error("No image data received from server");
+      }
+
       setForm((prev) => ({
         ...prev,
         photo: `data:image/jpeg;base64,${data.photo}`,
       }));
+
+      // Success toast notification
+      toast.success("Image generated successfully!");
     } catch (error) {
-      alert(error.message);
+      console.error("Image generation error:", error);
+
+      // Error toast notification
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to generate image. Please try again later."
+      );
     } finally {
       setGeneratingImg(false);
     }
@@ -60,23 +84,29 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm() || !form.photo) {
-      alert("Please generate an image before sharing");
+      toast.warning("Please generate an image before sharing");
       return;
     }
 
     try {
       setLoading(true);
-      const response = await fetch(API_ENDPOINTS.createPost, {
-        method: "POST",
+
+      await axios.post(API_ENDPOINTS.createPost, form, {
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
       });
 
-      if (!response.ok) throw new Error("Failed to create post");
-      await response.json();
+      // Success toast notification
+      toast.success("Post shared successfully!");
       navigate("/");
     } catch (error) {
-      alert(error.message);
+      console.error("Post creation error:", error);
+
+      // Error toast notification
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to share post. Please try again later."
+      );
     } finally {
       setLoading(false);
     }
