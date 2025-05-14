@@ -1,9 +1,10 @@
-import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
 import { Home, CreatePost } from "./pages";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
                 <Route path="/create-post" element={<CreatePost />} />
               </Routes>
             </main>
+            <ToastContainer />
           </div>
         </BrowserRouter>
       </ThemeProvider>

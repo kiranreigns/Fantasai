@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { logoLight, logoDark } from "../assets";
@@ -10,8 +10,30 @@ const Header = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileMenuRef = useRef(null); // Ref to track the profile menu
   const navigate = useNavigate(); // useNavigate hook for navigation between pages
   const location = useLocation(); // useLocation to track the current path
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setShowProfileMenu(false); // Close the profile menu if clicked outside
+      }
+    };
+
+    // Add event listener when menu is open
+    if (showProfileMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    // cleanup the event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showProfileMenu]);
 
   const handleCreateOrPostsclick = () => {
     if (!currentUser) {
@@ -109,7 +131,7 @@ const Header = () => {
         )}
 
         {currentUser && (
-          <div className="relative">
+          <div className="relative" ref={profileMenuRef}>
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="flex items-center rounded-full overflow-hidden w-10 h-10  focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -130,12 +152,12 @@ const Header = () => {
             </button>
 
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
-                <div className="px-4 py-2 border-b border-gray-200">
-                  <p className="text-sm font-medium text-gray-900">
+              <div className="absolute right-0 mt-5 py-2 w-60 bg-white rounded-lg shadow-xl z-20 border-solid border-2 border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     {currentUser.displayName}
                   </p>
-                  <p className="text-sm text-gray-500 truncate">
+                  <p className="text-sm text-gray-500 truncate dark:text-gray-400">
                     {currentUser.email}
                   </p>
                 </div>
@@ -144,15 +166,17 @@ const Header = () => {
                   className="w-full text-left px-4 py-2 text-sm 
                     bg-white 
                     text-gray-700 
-                    hover:bg-red-60 
-                    hover:text-red-600
+                    dark:bg-gray-800
+                    dark:text-gray-200
+                    dark:hover:text-red-500
+                    hover:text-red-500
                     transition-all duration-200
                     group flex items-center gap-2"
                 >
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-gray-500 dark:text-gray-400 
-                      group-hover:text-red-500 dark:group-hover:text-red-400 
+                    xmlns="https://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-gray-600 dark:text-gray-100 
+                      group-hover:text-red-500 dark:group-hover:text-red-500 
                       transition-colors duration-200"
                     fill="none"
                     viewBox="0 0 24 24"
