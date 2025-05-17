@@ -9,8 +9,8 @@ import { getRandomPrompt } from "../utils";
 import { FormField, LoadingSpinner, Button } from "../components";
 
 const API_ENDPOINTS = {
-  generateImage: "http://localhost:8080/api/v1/fantasai",
-  createPost: "http://localhost:8080/api/v1/post",
+  generateImage: `${import.meta.env.VITE_BACKEND_URL}/api/v1/fantasai`,
+  createPost: `${import.meta.env.VITE_BACKEND_URL}/api/v1/post`,
 };
 
 const initialFormState = {
