@@ -29,7 +29,7 @@ const ActionButtons = ({
 
   // Add dark mode specific classes for icons
   const iconColorClasses =
-    size === "large" ? "text-gray-800 dark:text-white" : "text-white";
+    size === "large" ? "text-gray-800 dark:text-white/90" : "text-white/90";
 
   return (
     <div className="flex items-center gap-2 sm:gap-3">
@@ -50,7 +50,7 @@ const ActionButtons = ({
                 ${isAnimating ? "animate-pulse" : ""}`}
               />
             ) : (
-              <FaRegHeart className={`${iconSizes[size]} text-white`} />
+              <FaRegHeart className={`${iconSizes[size]} text-white/90`} />
             )}
           </div>
         ) : isLiked ? (
@@ -73,7 +73,7 @@ const ActionButtons = ({
         </button>
         <div
           className={`absolute bottom-full right-0 mb-1 sm:mb-0.5 rounded-lg p-1 sm:p-2 
-            ${size === "large" ? "bg-gray-800" : ""} 
+            ${size === "large" ? "bg-black/85" : ""} 
             invisible opacity-0 group-hover/share:visible group-hover/share:opacity-100
             translate-y-1 group-hover/share:translate-y-0
             transition-all duration-200 ease-out
