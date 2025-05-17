@@ -4,7 +4,6 @@ import cors from "cors";
 import connectDB from "./mongodb/connect.js";
 import postRoutes from "./routes/postRoutes.js";
 import fantasaiRoutes from "./routes/fantasaiRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 
@@ -16,7 +15,6 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 // Routes
 app.use("/api/v1/post", postRoutes);
 app.use("/api/v1/fantasai", fantasaiRoutes);
-app.use("/api/v1/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello from Fantasai!");

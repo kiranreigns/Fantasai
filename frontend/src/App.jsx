@@ -5,6 +5,27 @@ import Header from "./components/Header";
 import { Home, CreatePost } from "./pages";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useTheme } from "./context/ThemeContext";
+
+// Create a wrapper component for ToastContainer to access theme context
+const ThemedToastContainer = () => {
+  const { isDarkMode } = useTheme();
+
+  return (
+    <ToastContainer
+      position="top-right"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme={isDarkMode ? "dark" : "light"}
+    />
+  );
+};
 
 const App = () => {
   return (
@@ -19,7 +40,7 @@ const App = () => {
                 <Route path="/create-post" element={<CreatePost />} />
               </Routes>
             </main>
-            <ToastContainer />
+            <ThemedToastContainer />
           </div>
         </BrowserRouter>
       </ThemeProvider>

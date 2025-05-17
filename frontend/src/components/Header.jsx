@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { logoLight, logoDark } from "../assets";
@@ -140,6 +140,7 @@ const Header = () => {
                 <img
                   src={currentUser.photoURL}
                   alt="Profile"
+                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover"
                 />
               ) : (

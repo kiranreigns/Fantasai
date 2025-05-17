@@ -1,22 +1,25 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { download } from "../assets";
-import { FaHeart, FaRegHeart, FaPinterest, FaInstagram } from "react-icons/fa";
+import {
+  FaHeart,
+  FaRegHeart,
+  FaPinterest,
+  FaFacebookSquare,
+} from "react-icons/fa";
 import { FaXTwitter, FaRegShareFromSquare } from "react-icons/fa6";
 
 const ActionButtons = ({
   isLiked,
   isAnimating,
-  isShareOpen,
   handleLike,
-  toggleShare,
   handleSharePlatform,
   handleDownload,
   size = "small", // 'small' for card, 'large' for modal
 }) => {
   const iconSizes = {
-    small: "w-4 h-4 md:w-5 md:h-5",
-    large: "w-5 h-5 sm:w-6 sm:h-6",
+    small: "w-4 h-4 md:w-6 md:h-6",
+    large: "w-7 h-7 sm:w-6 sm:h-6",
   };
 
   const shareIconSizes = {
@@ -57,44 +60,54 @@ const ActionButtons = ({
         )}
       </button>
 
-      <div className="relative">
+      <div className="relative group/share">
+        {" "}
+        {/* Use group naming strategy */}
         <button
-          onClick={toggleShare}
           className="flex items-center hover:scale-110 transition-transform bg-transparent border-none outline-none p-0"
+          aria-label="Share options"
         >
           <FaRegShareFromSquare
             className={`${iconSizes[size]} ${iconColorClasses}`}
           />
         </button>
-
-        {isShareOpen && (
-          <div
-            className={`absolute bottom-full right-0 mb-1 sm:mb-0.5 rounded-lg p-1 sm:p-2 ${
-              size === "large" ? "bg-gray-800" : ""
-            }`}
-          >
-            <div className="flex gap-1 sm:gap-2">
-              <button
-                onClick={(e) => handleSharePlatform(e, "pinterest")}
-                className="text-red-600 hover:scale-110 transition-transform bg-transparent border-none outline-none p-0"
-              >
-                <FaPinterest className={shareIconSizes[size]} />
-              </button>
-              <button
-                onClick={(e) => handleSharePlatform(e, "instagram")}
-                className="text-pink-600 hover:scale-110 transition-transform bg-transparent border-none outline-none p-0"
-              >
-                <FaInstagram className={shareIconSizes[size]} />
-              </button>
-              <button
-                onClick={(e) => handleSharePlatform(e, "twitter")}
-                className="text-white hover:scale-110 transition-transform bg-transparent border-none outline-none p-0"
-              >
-                <FaXTwitter className={shareIconSizes[size]} />
-              </button>
-            </div>
+        <div
+          className={`absolute bottom-full right-0 mb-1 sm:mb-0.5 rounded-lg p-1 sm:p-2 
+            ${size === "large" ? "bg-gray-800" : ""} 
+            invisible opacity-0 group-hover/share:visible group-hover/share:opacity-100
+            translate-y-1 group-hover/share:translate-y-0
+            transition-all duration-200 ease-out
+            will-change-transform will-change-opacity`}
+          aria-hidden="true"
+        >
+          <div className="flex gap-1 sm:gap-2">
+            <button
+              onClick={(e) => handleSharePlatform(e, "pinterest")}
+              className="text-red-600 hover:scale-110 transition-transform bg-transparent border-none outline-none p-0 will-change-transform"
+              aria-label="Share on Pinterest"
+            >
+              <FaPinterest
+                className={`${shareIconSizes[size]} transform-gpu`}
+              />
+            </button>
+            <button
+              onClick={(e) => handleSharePlatform(e, "instagram")}
+              className="text-blue-500 hover:scale-110 transition-transform bg-transparent border-none outline-none p-0  will-change-transform"
+              aria-label="Share on Facebook"
+            >
+              <FaFacebookSquare
+                className={`${shareIconSizes[size]} transform-gpu`}
+              />
+            </button>
+            <button
+              onClick={(e) => handleSharePlatform(e, "twitter")}
+              className="text-white hover:scale-110 transition-transform bg-transparent border-none outline-none p-0 will-change-transform"
+              aria-label="Share on X"
+            >
+              <FaXTwitter className={`${shareIconSizes[size]} transform-gpu`} />
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
       <button
@@ -117,9 +130,7 @@ const ActionButtons = ({
 ActionButtons.propTypes = {
   isLiked: PropTypes.bool.isRequired,
   isAnimating: PropTypes.bool.isRequired,
-  isShareOpen: PropTypes.bool.isRequired,
   handleLike: PropTypes.func.isRequired,
-  toggleShare: PropTypes.func.isRequired,
   handleSharePlatform: PropTypes.func.isRequired,
   handleDownload: PropTypes.func.isRequired,
   size: PropTypes.oneOf(["small", "large"]),

@@ -58,7 +58,7 @@ const FormField = ({
               flex items-center gap-1"
           >
             <svg
-              xmlns="http://www.w3.org/2000/svg"
+              xmlns="https://www.w3.org/2000/svg"
               width="16"
               height="16"
               viewBox="0 0 24 24"
@@ -100,7 +100,7 @@ const FormField = ({
               ${
                 error
                   ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-700"
+                  : "border-gray-300 dark:border-gray-600"
               }
               min-h-[120px] resize-none`}
             style={{
@@ -119,7 +119,7 @@ const FormField = ({
             className={`block w-full px-4 py-3 text-sm 
               text-gray-800 dark:text-gray-200 
               bg-white dark:bg-gray-800 
-              border rounded-xl 
+              border border-solid rounded-xl 
               outline-none
               transition-all duration-300 
               focus:ring-2 focus:ring-indigo-400 focus:border-transparent 
@@ -127,7 +127,7 @@ const FormField = ({
               ${
                 error
                   ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-700"
+                  : "border-gray-300 dark:border-gray-600"
               }`}
           />
         )}
