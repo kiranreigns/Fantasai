@@ -7,7 +7,13 @@ const router = express.Router();
 
 const handleImageGeneration = async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const {
+      prompt,
+      width = 1024,
+      height = 1024,
+      steps = 4,
+      seed = 0,
+    } = req.body;
 
     if (!prompt) {
       return res.status(400).json({
@@ -19,7 +25,7 @@ const handleImageGeneration = async (req, res) => {
     console.log("Generating image with prompt:", prompt);
 
     const invokeUrl =
-      "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-xl";
+      "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-schnell";
 
     const headers = {
       Authorization: `Bearer ${process.env.NVDIA_FLUX_API_KEY}`,
@@ -27,60 +33,75 @@ const handleImageGeneration = async (req, res) => {
       "Content-Type": "application/json",
     };
 
-    // Enhanced prompt with quality boosters
-    const enhancedPrompt = `${prompt}, high quality, detailed, sharp focus,`;
-
-    // Negative prompts to avoid common issues
-    const negativePrompt =
-      "disfigured, distorted, blurred, deformed, bad anatomy, extra limbs, missing limbs, poorly drawn face, bad proportions, duplicate, morbid, mutilated, out of frame, ugly, pixelated";
-
-    // Improved payload format for Stable Diffusion XL with fine-tuned parameters
+    // Flux model payload format
     const payload = {
-      text_prompts: [
-        {
-          text: enhancedPrompt,
-          weight: 1.0,
-        },
-        {
-          text: negativePrompt,
-          weight: -1.0,
-        },
-      ],
-      cfg_scale: 8.0, // Increased for better prompt adherence
-      height: 1024,
-      width: 1024,
-      samples: 1,
-      steps: 40, // Increased for better quality
-      seed: Math.floor(Math.random() * 1000000),
-      sampler: "DDIM", // Specified sampler for better results
+      prompt: prompt,
+      width: width,
+      height: height,
+      seed: seed,
+      steps: steps,
     };
 
     console.log("Making request to:", invokeUrl);
+    console.log("Payload:", JSON.stringify(payload, null, 2));
 
     const response = await axios.post(invokeUrl, payload, { headers });
 
-    // Extract the image data from the response
+    console.log("Response status:", response.status);
+    console.log("Response data type:", typeof response.data);
+    console.log("Response data length:", response.data?.length || 0);
+
+    // Handle Flux API response format - it returns artifacts array with base64 image
     if (
       response.data &&
       response.data.artifacts &&
       response.data.artifacts.length > 0
     ) {
+      // Extract the base64 image from the artifacts array
       const base64Image = response.data.artifacts[0].base64;
 
-      // Return the image data to the client
+      console.log("Received base64 image, length:", base64Image.length);
+
+      // Return the image data in the expected format for the frontend
+      res.json({
+        success: true,
+        photo: base64Image,
+      });
+    } else if (response.data && typeof response.data === "string") {
+      // Fallback: if the response is a base64 image string directly
+      const base64Image = response.data;
+
+      console.log(
+        "Received base64 image directly, length:",
+        base64Image.length
+      );
+
       res.json({
         success: true,
         photo: base64Image,
       });
     } else {
+      console.error("Unexpected response format:", response.data);
       throw new Error("No image data found in API response");
     }
   } catch (error) {
     console.error("Error:", error.response?.data || error.message);
-    res.status(500).json({
-      success: false,
-      error: error.message || "Failed to generate image",
-    });
+
+    // Handle specific HTTP error responses
+    if (error.response) {
+      const errorMessage =
+        error.response.data ||
+        `Request failed with status ${error.response.status}`;
+      res.status(error.response.status).json({
+        success: false,
+        error: errorMessage,
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: error.message || "Failed to generate image",
+      });
+    }
   }
 };
 
