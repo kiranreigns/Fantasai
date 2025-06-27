@@ -11,8 +11,10 @@ const handleImageGeneration = async (req, res) => {
       prompt,
       width = 1024,
       height = 1024,
-      steps = 4,
+      steps = 50,
       seed = 0,
+      mode = "base",
+      cfg_scale = 3.5,
     } = req.body;
 
     if (!prompt) {
@@ -22,10 +24,10 @@ const handleImageGeneration = async (req, res) => {
       });
     }
 
-    console.log("Generating image with prompt:", prompt);
+    // console.log("Generating image with prompt:", prompt);
 
     const invokeUrl =
-      "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-schnell";
+      "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-dev";
 
     const headers = {
       Authorization: `Bearer ${process.env.NVDIA_FLUX_API_KEY}`,
@@ -33,23 +35,25 @@ const handleImageGeneration = async (req, res) => {
       "Content-Type": "application/json",
     };
 
-    // Flux model payload format
+    // Flux.1-dev model payload format
     const payload = {
       prompt: prompt,
+      mode: mode,
+      cfg_scale: cfg_scale,
       width: width,
       height: height,
       seed: seed,
       steps: steps,
     };
 
-    console.log("Making request to:", invokeUrl);
-    console.log("Payload:", JSON.stringify(payload, null, 2));
+    // console.log("Making request to:", invokeUrl);
+    // console.log("Payload:", JSON.stringify(payload, null, 2));
 
     const response = await axios.post(invokeUrl, payload, { headers });
 
-    console.log("Response status:", response.status);
-    console.log("Response data type:", typeof response.data);
-    console.log("Response data length:", response.data?.length || 0);
+    // console.log("Response status:", response.status);
+    // console.log("Response data type:", typeof response.data);
+    // console.log("Response data length:", response.data?.length || 0);
 
     // Handle Flux API response format - it returns artifacts array with base64 image
     if (
@@ -60,7 +64,7 @@ const handleImageGeneration = async (req, res) => {
       // Extract the base64 image from the artifacts array
       const base64Image = response.data.artifacts[0].base64;
 
-      console.log("Received base64 image, length:", base64Image.length);
+      // console.log("Received base64 image, length:", base64Image.length);
 
       // Return the image data in the expected format for the frontend
       res.json({
@@ -71,10 +75,10 @@ const handleImageGeneration = async (req, res) => {
       // Fallback: if the response is a base64 image string directly
       const base64Image = response.data;
 
-      console.log(
-        "Received base64 image directly, length:",
-        base64Image.length
-      );
+      // console.log(
+      //   "Received base64 image directly, length:",
+      //   base64Image.length
+      // );
 
       res.json({
         success: true,
