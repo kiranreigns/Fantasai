@@ -179,8 +179,11 @@ const Home = () => {
 
   return (
     <>
+      {/* Hero Section - FantasaiIntro */}
       <FantasaiIntro />
-      <section className="max-w-7xl mx-auto">
+
+      {/* Community Gallery Section */}
+      <section className="max-w-7xl mx-auto px-4 py-12">
         <div>
           <h2 className="text-[2rem] font-bold text-[#222328] dark:text-gray-200 mb-4">
             The Community Gallery
