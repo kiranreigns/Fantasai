@@ -55,6 +55,7 @@ const Header = () => {
 
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
+    navigate("/create-post");
   };
 
   const handleLogout = () => {
