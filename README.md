@@ -1,12 +1,12 @@
 # Fantasai - AI-Powered Image Generation App
 
-![Fantasai Logo](./frontend/public/logoDark.png)
+![Fantasai Logo](./screenshots/fantasai.jpeg)
 
-Fantasai is an intuitive AI image generation application that transforms your text prompts into stunning visual art. Powered by advanced stable diffusion models, Fantasai makes creative image generation accessible to everyone.
+Fantasai is an intuitive AI image generation application that transforms your text prompts into stunning visual art. Powered by FLUX.1, a state-of-the-art image generation model, Fantasai makes creative image generation accessible to everyone.
 
 ## ✨ Features
 
-- **AI-Powered Image Generation**: Transform text prompts into visually stunning images using state-of-the-art AI models
+- **AI-Powered Image Generation**: Transform text prompts into visually stunning images using state-of-the-art AI model
 - **User-Friendly Interface**: Visually appealing and intuitive design for seamless user experience
 - **Community Gallery**: Explore and get inspired by images created by other users
 - **Modern Authentication**: Sign in with google with one click or sign up with your email
@@ -15,10 +15,6 @@ Fantasai is an intuitive AI image generation application that transforms your te
 - **Dark/Light Theme**: Customize your visual experience with dark and light modes
 
 ## 📱 Screenshots
-
-### Home Screen
-
-![Home Screen](./screenshots/home.png)
 
 ### Image Generation
 
@@ -53,7 +49,7 @@ Fantasai is an intuitive AI image generation application that transforms your te
 - MongoDB
 - Mongoose
 - JWT Authentication
-- Hugging Face API
+- Flux.1
 - Cloudinary
 
 ## 🚀 Getting Started
@@ -97,7 +93,7 @@ Create a `.env` file in the backend directory with the following variables:
 ```
 MONGODB_URL=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-HUGGINGFACE_API_KEY=your_huggingface_api_key
+NVDIA_FLUX_API_KEY=your_flux_api_key
 CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
@@ -127,7 +123,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📬 Contact
 
 - Email: kiran01001011@gmail.com
-- Linkedin: [@Kiran](www.linkedin.com/in/kiran-s-428404249)
+- Linkedin: [www.linkedin.com/in/kiran-s-428404249](www.linkedin.com/in/kiran-s-428404249)
 - Website: [fantasai-app.com](https://fantasai-app.com)
 
 ---
